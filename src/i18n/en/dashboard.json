@@ -1,0 +1,11 @@
+{
+  "header": {
+    "discover": "Discover Books",
+    "finished": "Finished Books",
+    "language": "Language",
+    "profile": "Profile",
+    "readingList": "Reading List",
+    "signOut": "Sign Out",
+    "theme": "Theme"
+  }
+}
