@@ -9,17 +9,11 @@ import { useShowErrorMessage } from '@/common/hooks';
 import { Typography, Form } from '@/common/components';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/common/components/ui/form';
 
 import FormWrapper from '../components/FormWrapper';
 import { useSignInValidation, type SignInFields } from '../validations';
 import { AUTH_ROUTES } from '../routes';
+import { FormItemCustom } from '@/common/components/Form';
 
 const SignIn = () => {
   const { t } = useTranslation('auth');
@@ -47,30 +41,20 @@ const SignIn = () => {
         {{
           formFields: (
             <>
-              <FormField
-                control={form.control}
+              <FormItemCustom
+                form={form}
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('signIn.email')}</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                label={t('signIn.email')}
+                renderInput={(field) => (
+                  <Input type="email" {...field} />
                 )}
               />
-              <FormField
-                control={form.control}
+              <FormItemCustom
+                form={form}
                 name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('signIn.password')}</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                label={t('signIn.password')}
+                renderInput={(field) => (
+                  <Input type="password" {...field} />
                 )}
               />
             </>

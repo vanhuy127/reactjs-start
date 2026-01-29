@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import { useLanguage, LANGUAGES_CONFIG } from '@/i18n';
 import { useTheme } from '@/app/providers/Theme';
-import { useSignOut } from '@/common/auth';
 import { Typography } from '@/common/components';
 import {
   DropdownMenu,
@@ -22,6 +21,7 @@ import {
 import { Avatar, AvatarFallback } from '@/common/components/ui/avatar';
 
 import { DASHBOARD_ROUTES } from '../../routes';
+import { handleLogout } from '@/common/auth/state';
 
 type Props = {
   email: string;
@@ -29,8 +29,6 @@ type Props = {
 
 const UserDropdown = ({ email }: Props) => {
   const { t } = useTranslation('dashboard');
-
-  const { signOut } = useSignOut();
 
   return (
     <DropdownMenu>
@@ -55,7 +53,7 @@ const UserDropdown = ({ email }: Props) => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onSelect={signOut}>{t('header.signOut')}</DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleLogout}>{t('header.signOut')}</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

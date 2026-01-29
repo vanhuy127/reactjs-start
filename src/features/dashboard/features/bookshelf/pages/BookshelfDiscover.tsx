@@ -14,7 +14,7 @@ const BookshelfDiscover = () => {
     return <ResultError error={error} />;
   }
 
-  return <List books={data.books} />;
+  return <List books={data.data} />;
 };
 
 export default BookshelfDiscover;

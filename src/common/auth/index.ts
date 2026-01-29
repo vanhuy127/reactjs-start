@@ -1,15 +1,14 @@
 import { useMemo, useCallback, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { type SignInPayload } from '@/api';
-import { signIn as signInApi, relogin as reloginApi, signOut as signOutApi } from '@/api/endpoints';
+import { getMe, signIn as signInApi } from '@/api/endpoints';
 
-import { useAuthState } from './state';
+import { getAccessToken, getRefreshToken, handleLogout, useAuthState } from './state';
 
 export { default as RequireIsAnonymous } from './RequireIsAnonymous';
 export { default as RequireIsLoggedIn } from './RequireIsLoggedIn';
 
-export { getToken } from './state';
+export { getAccessToken, getRefreshToken } from './state';
 
 export const useAuth = () => useAuthState()[0];
 
@@ -22,7 +21,17 @@ export const useSignIn = () => {
     async (payload: SignInPayload, opts?: { onError?: (error: unknown) => void }) => {
       try {
         setIsPending(true);
-        setAuthState(await signInApi(payload));
+        const response = await signInApi(payload);
+
+        if (response.success) {
+          const { id, accessToken, refreshToken } = response.data;
+
+          setAuthState({
+            userId: id,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          });
+        }
       } catch (error: unknown) {
         opts?.onError?.(error);
       } finally {
@@ -43,34 +52,25 @@ export const useRelogin = () => {
   const relogin = useCallback(async () => {
     try {
       setIsPending(true);
-      setAuthState(await reloginApi());
+      const response = await getMe();
+
+      if (response.success) {
+        const { id } = response.data;
+        const accessToken = getAccessToken();
+        const refreshToken = getRefreshToken();
+
+        setAuthState({
+          userId: id,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        });
+      }
     } catch {
-      setAuthState();
+      handleLogout();
     } finally {
       setIsPending(false);
     }
   }, [setAuthState, setIsPending]);
 
   return useMemo(() => ({ isPending, relogin }), [isPending, relogin]);
-};
-
-export const useSignOut = () => {
-  const [isPending, setIsPending] = useState(false);
-
-  const [, setAuthState] = useAuthState();
-
-  const queryClient = useQueryClient();
-
-  const signOut = useCallback(async () => {
-    try {
-      setIsPending(true);
-      await signOutApi();
-    } finally {
-      setAuthState();
-      queryClient.removeQueries();
-      setIsPending(false);
-    }
-  }, [setAuthState, setIsPending, queryClient]);
-
-  return useMemo(() => ({ isPending, signOut }), [isPending, signOut]);
 };

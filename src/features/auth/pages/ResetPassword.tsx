@@ -8,18 +8,12 @@ import { useShowErrorMessage } from '@/common/hooks';
 import { Form } from '@/common/components';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/common/components/ui/form';
 import { DASHBOARD_ROUTES } from '@/features/dashboard/routes';
 
 import FormWrapper from '../components/FormWrapper';
 import Success from '../components/Success';
 import { useResetPasswordValidation, type ResetPasswordFields } from '../validations';
+import { FormItemCustom } from '@/common/components/Form';
 
 const ResetPassword = () => {
   const { t } = useTranslation(['global', 'auth']);
@@ -69,17 +63,16 @@ const ResetPassword = () => {
       <Form form={form} onSubmit={onSubmit} id="auth-form">
         {{
           formFields: (
-            <FormField
-              control={form.control}
+            <FormItemCustom
+              form={form}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('auth:resetPassword.email')}</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              label={t('auth:resetPassword.email')}
+              renderInput={(field) => (
+                <Input
+                  type="email"
+                  placeholder={t('auth:resetPassword.email')}
+                  {...field}
+                />
               )}
             />
           ),

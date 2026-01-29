@@ -8,25 +8,10 @@ import {
   fetchUserEmailAvailability,
   confirmEmail,
   fetchBookshelfDiscover,
-  fetchBookshelfReadingList,
-  fetchBookshelfFinished,
-  fetchBook,
-  addToReadingList,
-  markBook,
-  setRating,
-  setNote,
-  removeFromReadingList,
+  getMe,
 } from './endpoints';
-import type {
-  CreateUserPayload,
-  ChangePasswordPayload,
-  ResetPasswordPayload,
-  AddToReadingListPayload,
-  MarkBookPayload,
-  SetRatingPayload,
-  SetNotePayload,
-  RemoveFromReadingListPayload,
-} from './models';
+import type { CreateUserPayload, ChangePasswordPayload, ResetPasswordPayload } from './models';
+import { useAuthState } from '@/common/auth/state';
 
 /**
  * User
@@ -34,8 +19,19 @@ import type {
 
 const userQueryKeys = {
   all: ['user'] as const,
+  current: ['get-me'] as const,
   user: (userId: string) => [...userQueryKeys.all, userId] as const,
   emailAvailability: (email: string) => [...userQueryKeys.all, 'emailAvailability', email] as const,
+};
+
+export const useGetMe = () => {
+  const [{ isLoggedIn }] = useAuthState();
+
+  return useQuery({
+    queryKey: userQueryKeys.current,
+    queryFn: () => getMe(),
+    enabled: isLoggedIn,
+  });
 };
 
 export const useFetchUser = (userId: string) =>
@@ -104,81 +100,3 @@ export const useFetchBookshelfDiscover = () =>
     queryKey: bookshelfQueryKeys.discover(),
     queryFn: () => fetchBookshelfDiscover(),
   });
-
-export const useFetchBookshelfReadingList = () =>
-  useQuery({
-    queryKey: bookshelfQueryKeys.readingList(),
-    queryFn: () => fetchBookshelfReadingList(),
-  });
-
-export const useFetchBookshelfFinished = () =>
-  useQuery({
-    queryKey: bookshelfQueryKeys.finished(),
-    queryFn: () => fetchBookshelfFinished(),
-  });
-
-export const useFetchBook = (bookId: string) =>
-  useQuery({
-    queryKey: bookshelfQueryKeys.book(bookId),
-    queryFn: () => fetchBook(bookId),
-  });
-
-export const useAddToReadingList = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: AddToReadingListPayload) => addToReadingList(payload),
-    onSuccess: ({ bookId }) => {
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.list() });
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.book(bookId) });
-    },
-  });
-};
-
-export const useRemoveFromReadingList = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: RemoveFromReadingListPayload) => removeFromReadingList(payload),
-    onSuccess: ({ bookId }) => {
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.list() });
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.book(bookId) });
-    },
-  });
-};
-
-export const useMarkBook = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: MarkBookPayload) => markBook(payload),
-    onSuccess: ({ bookId }) => {
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.list() });
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.book(bookId) });
-    },
-  });
-};
-
-export const useSetRating = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: SetRatingPayload) => setRating(payload),
-    onSuccess: ({ bookId }) => {
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.list() });
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.book(bookId) });
-    },
-  });
-};
-
-export const useSetNote = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload: SetNotePayload) => setNote(payload),
-    onSuccess: ({ bookId }) => {
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.list() });
-      void queryClient.invalidateQueries({ queryKey: bookshelfQueryKeys.book(bookId) });
-    },
-  });
-};

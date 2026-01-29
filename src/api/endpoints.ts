@@ -2,7 +2,6 @@ import { get, post, patch, del } from './client';
 import { getURL, getAuthorizationHeader } from './utils';
 import {
   signInResponseSchema,
-  signOutResponseSchema,
   userResponseSchema,
   userEmailAvailabilityResponseSchema,
   confirmEmailResponseSchema,
@@ -10,6 +9,7 @@ import {
   booksResponseSchema,
   bookResponseSchema,
   readingListResponseSchema,
+  currentUserResponseSchema,
 } from './models';
 import type {
   SignInPayload,
@@ -28,19 +28,11 @@ import type {
  */
 
 export const signIn = (body: SignInPayload) =>
-  post(signInResponseSchema, getURL('/auth/sign-in'), {
+  post(signInResponseSchema, getURL('/auth/login'), {
     body,
   });
 
-export const relogin = () =>
-  patch(signInResponseSchema, getURL('/auth/relogin'), {
-    headers: getAuthorizationHeader(),
-  });
-
-export const signOut = () =>
-  post(signOutResponseSchema, getURL('/auth/sign-out'), {
-    headers: getAuthorizationHeader(),
-  });
+export const getMe = () => get(currentUserResponseSchema, getURL('/auth/me'));
 
 /**
  * User

@@ -1,4 +1,29 @@
 import { z } from 'zod';
+// 1. Tạo hàm tạo Schema cho Response cơ bản
+export const createBaseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+  z.object({
+    success: z.boolean(),
+    message_code: z.string().nullable(),
+    messages: z.array(
+      z.object({
+        field: z.string(),
+        error_code: z.string(),
+      }),
+    ),
+    data: dataSchema,
+  });
+
+// 2. Tạo hàm tạo Schema cho dữ liệu phân trang
+export const createPaginatedDataSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
+  z.object({
+    data: z.array(itemSchema),
+    pagination: z.object({
+      total: z.number(),
+      page: z.number(),
+      size: z.number(),
+      totalPages: z.number(),
+    }),
+  });
 
 /**
  * Auth
@@ -9,16 +34,25 @@ export const signInPayloadSchema = z.object({
   password: z.string(),
 });
 
-export const signInResponseSchema = z.object({
-  token: z.string(),
-  userId: z.string(),
+export const signInSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  role: z.enum(['ADMIN', 'USER']),
+  userName: z.string(),
+  accessToken: z.string(),
+  refreshToken: z.string(),
 });
 
-export const signOutResponseSchema = z.boolean();
+export const refreshTokenSchema = z.object({
+  accessToken: z.string(),
+});
+
+// signInResponseSchema
+export const signInResponseSchema = createBaseResponseSchema(signInSchema);
+export const refreshTokenResponseSchema = createBaseResponseSchema(refreshTokenSchema);
 
 export type SignInPayload = z.infer<typeof signInPayloadSchema>;
 export type SignInResponse = z.infer<typeof signInResponseSchema>;
-export type SignOutResponse = z.infer<typeof signOutResponseSchema>;
 
 /**
  * User
@@ -28,6 +62,15 @@ export const userSchema = z.object({
   id: z.string(),
   email: z.string(),
 });
+
+export const currentUserSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  role: z.enum(['ADMIN', 'USER']),
+  userName: z.string(),
+});
+
+export const currentUserResponseSchema = createBaseResponseSchema(currentUserSchema);
 
 export const createUserPayloadSchema = z.object({
   email: z.string(),
@@ -78,9 +121,7 @@ export const bookResponseSchema = z.object({
   book: bookSchema,
 });
 
-export const booksResponseSchema = z.object({
-  books: z.array(bookSchema),
-});
+export const booksResponseSchema = createBaseResponseSchema(z.array(bookSchema));
 
 export const readingListSchema = z.object({
   userId: z.string(),

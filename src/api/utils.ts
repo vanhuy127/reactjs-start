@@ -1,7 +1,7 @@
 import qs from 'query-string';
 import { type Status } from '@reflet/http';
 
-import { getToken } from '@/common/auth';
+import { getAccessToken } from '@/common/auth';
 
 export type ApiError = {
   status: (typeof Status)[keyof typeof Status];
@@ -15,6 +15,6 @@ export const getURL = (path: string, params?: Record<string, unknown>) =>
   (params && Object.keys(params).length > 0 ? `?${qs.stringify(params)}` : '');
 
 export const getAuthorizationHeader = (token?: string) => {
-  const t = token ?? getToken();
+  const t = token ?? getAccessToken();
   return t ? { Authorization: `Bearer ${t}` } : undefined;
 };

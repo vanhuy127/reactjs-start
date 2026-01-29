@@ -11,6 +11,7 @@ import Router from './providers/Router';
 import GlobalErrorBoundary from './GlobalErrorBoundary';
 import PersistAuthGate from './PersistAuthGate';
 import App from './App';
+import ModalRoot from '@/common/components/Model';
 
 const Root = () => (
   <GlobalErrorBoundary>
@@ -23,6 +24,7 @@ const Root = () => (
             <Query>
               <PersistAuthGate loadingFallback={<Loading />}>
                 <Router>
+                  <ModalRoot />
                   <App />
                 </Router>
               </PersistAuthGate>

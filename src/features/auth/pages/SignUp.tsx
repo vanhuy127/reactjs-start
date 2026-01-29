@@ -9,17 +9,10 @@ import { useShowErrorMessage } from '@/common/hooks';
 import { Form } from '@/common/components';
 import { Button } from '@/common/components/ui/button';
 import { Input } from '@/common/components/ui/input';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/common/components/ui/form';
-
 import FormWrapper from '../components/FormWrapper';
 import Success from '../components/Success';
 import { useSignUpValidation, type SignUpFields } from '../validations';
+import { FormItemCustom } from '@/common/components/Form';
 
 const DEBOUNCE_MS = 500;
 
@@ -66,32 +59,28 @@ const SignUp = () => {
         {{
           formFields: (
             <>
-              <FormField
-                control={form.control}
+              <FormItemCustom
+                form={form}
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('signUp.email')}</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                    <FormMessage>
-                      {isUserEmailAvailable ? null : t('signUp.emailTaken')}
-                    </FormMessage>
-                  </FormItem>
+                label={t('signUp.email')}
+                renderInput={(field) => (
+                  <>
+                    <Input type="email" {...field} />
+                    {/* Hiển thị lỗi email đã tồn tại nếu isUserEmailAvailable là false */}
+                    {!isUserEmailAvailable && emailValue && (
+                      <p className="text-sm font-medium text-destructive mt-2">
+                        {t('signUp.emailTaken')}
+                      </p>
+                    )}
+                  </>
                 )}
               />
-              <FormField
-                control={form.control}
+              <FormItemCustom
+                form={form}
                 name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('signUp.password')}</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                label={t('signUp.password')}
+                renderInput={(field) => (
+                  <Input type="password" {...field} />
                 )}
               />
             </>

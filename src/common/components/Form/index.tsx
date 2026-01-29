@@ -1,5 +1,6 @@
 import { type ReactNode, type HTMLAttributes } from 'react';
-import { type FieldValues, type UseFormReturn, FormProvider } from 'react-hook-form';
+import { FormProvider, type ControllerRenderProps, type FieldValues, type Path, type UseFormReturn } from 'react-hook-form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/common/components/ui/form';
 
 type FormProps<TFieldValues extends FieldValues = FieldValues> = Omit<
   HTMLAttributes<HTMLFormElement>,
@@ -11,6 +12,31 @@ type FormProps<TFieldValues extends FieldValues = FieldValues> = Omit<
     formFields: ReactNode;
     footer: ReactNode;
   };
+};
+
+export type InputFieldProps<T extends FieldValues> = {
+  form: UseFormReturn<T>;
+  name: Path<T>;
+  label: string;
+  placeholder?: string;
+  type?: string;
+  renderInput: (field: ControllerRenderProps<T, Path<T>>) => React.ReactNode;
+}
+
+export const FormItemCustom = <T extends FieldValues>({ form, name, label, renderInput }: InputFieldProps<T>) => {
+  return (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }: { field: ControllerRenderProps<T, Path<T>> }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>{renderInput(field)}</FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
 };
 
 const Form = <TFieldValues extends FieldValues = FieldValues>({

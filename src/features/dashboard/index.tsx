@@ -1,8 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 
-import { useFetchUser } from '@/api';
-import { useAuth, useSignOut } from '@/common/auth';
+import { useGetMe } from '@/api';
 import { Loading, NotFound, ResultError } from '@/common/components';
 
 import { DASHBOARD_ROUTES } from './routes';
@@ -12,17 +11,15 @@ const Bookshelf = lazy(() => import('./features/bookshelf'));
 const Profile = lazy(() => import('./features/profile'));
 
 const Dashboard = () => {
-  const { userId } = useAuth();
-  const { isPending: isSignOutPending } = useSignOut();
 
   const {
     isPending: userIsPending,
     isError: userIsError,
     error: userError,
     data,
-  } = useFetchUser(userId);
+  } = useGetMe();
 
-  if (userIsPending || isSignOutPending) {
+  if (userIsPending) {
     return <Loading />;
   }
 
@@ -40,7 +37,7 @@ const Dashboard = () => {
     <Routes>
       <Route
         element={
-          <Layout userEmail={data.user.email}>
+          <Layout userEmail={data.data.email}>
             <Suspense fallback={<Loading />}>
               <Outlet />
             </Suspense>

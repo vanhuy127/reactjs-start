@@ -3,8 +3,6 @@ import { userEvent } from '@testing-library/user-event';
 import { Suspense, type ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 
-import { dropDB } from '@/mocks/db';
-import { server } from '@/mocks/server';
 import { Loading } from '@/common/components';
 
 import ThemeProvider from './providers/Theme';
@@ -40,11 +38,6 @@ const Providers = ({ children }: { children: ReactNode }) => (
 
 const email = 'email@example.com';
 const password = 'password';
-
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-afterEach(() => server.resetHandlers());
-afterEach(() => dropDB());
-afterAll(() => server.close());
 
 test(
   'creates user and logs-in',

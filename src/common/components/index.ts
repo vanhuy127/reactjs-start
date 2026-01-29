@@ -5,3 +5,4 @@ export { default as NotFound } from './NotFound';
 export { default as ResultError } from './ResultError';
 export { default as StickyHeader } from './StickyHeader';
 export { default as Typography } from './Typography';
+export { default as Pagination } from './Pagination';
